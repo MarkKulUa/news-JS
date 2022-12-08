@@ -1,16 +1,18 @@
 import AppLoader from './appLoader';
+import { INews, ISource } from 'src/interfaces';
+import { Endpoints } from 'src/types';
 
 class AppController extends AppLoader {
-    getSources(callback) {
-        super.getResp(
+    getSources(callback): <ISource | undefined> {
+        return super.getResp(
             {
-                endpoint: 'sources',
+                endpoint: Endpoints.SOURCES,
             },
             callback
         );
     }
 
-    getNews(e, callback) {
+    getNews(e: Event, callback) {
         let target = e.target;
         const newsContainer = e.currentTarget;
 

@@ -1,19 +1,19 @@
-class Loader {
-    constructor(baseLink, options) {
-        this.baseLink = baseLink;
-        this.options = options;
-    }
+import {ILoader} from "../../interfaces";
+import {Methods, configs} from "src/types";
 
-    getResp(
-        { endpoint, options = {} },
+class Loader {
+    constructor(public baseLink: string, public options: { apiKey: string }) {}
+
+    getResp<T>(
+        { endpoint, options = {} }: configs,
         callback = () => {
-            console.error('No callback for GET response');
+            console.error(`No callback for ${ Methods.GET } response`);
         }
     ) {
-        this.load('GET', endpoint, callback, options);
+        this.load(Methods.GET, endpoint, callback, options);
     }
 
-    errorHandler(res) {
+    errorHandler(res: Response) {
         if (!res.ok) {
             if (res.status === 401 || res.status === 404)
                 console.log(`Sorry, but there is ${res.status} error: ${res.statusText}`);
@@ -23,7 +23,7 @@ class Loader {
         return res;
     }
 
-    makeUrl(options, endpoint) {
+    makeUrl(options: object, endpoint) {
         const urlOptions = { ...this.options, ...options };
         let url = `${this.baseLink}${endpoint}?`;
 
@@ -34,7 +34,7 @@ class Loader {
         return url.slice(0, -1);
     }
 
-    load(method, endpoint, callback, options = {}) {
+    load(method: string, endpoint: string, callback: CallableFunction, options = {}) {
         fetch(this.makeUrl(options, endpoint), { method })
             .then(this.errorHandler)
             .then((res) => res.json())

@@ -7,6 +7,13 @@
     "strict": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
-    "sourceMap": true
+    "sourceMap": true,
+
+//    "alwaysStrict": true,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "strictBindCallApply": true
   }
 }
