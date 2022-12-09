@@ -13,7 +13,7 @@ class News {
         news.forEach((item, idx) => {
             const newsClone = newsItemTemp.content.cloneNode(true) as HTMLElement;
 
-            if (idx % 2) newsClone.querySelector(NewsSelectors.item).classList.add('alt');
+            if (idx % 2) newsClone.querySelector(NewsSelectors.item)?.classList.add('alt');
 
             const title = newsClone.querySelector(NewsSelectors.title) as HTMLElement;
             const author = newsClone.querySelector(NewsSelectors.author) as HTMLElement;

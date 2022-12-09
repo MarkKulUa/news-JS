@@ -1,16 +1,12 @@
 import {ILoader} from "../../interfaces";
-import {Methods, configs} from "src/types";
+import {configs} from "src/types";
+import {Methods, Endpoints} from "src/enums";
 
 class Loader {
     constructor(public baseLink: string, public options: { apiKey: string }) {}
 
-    getResp<T>(
-        { endpoint, options = {} }: configs,
-        callback = () => {
-            console.error(`No callback for ${ Methods.GET } response`);
-        }
-    ) {
-        this.load(Methods.GET, endpoint, callback, options);
+    getResp<T>({ endpoint, options = {} }: configs): Promise<T | undefined> {
+        return this.load<T>(Methods.GET, endpoint, options);
     }
 
     errorHandler(res: Response) {
@@ -23,23 +19,25 @@ class Loader {
         return res;
     }
 
-    makeUrl(options: object, endpoint) {
-        const urlOptions = { ...this.options, ...options };
-        let url = `${this.baseLink}${endpoint}?`;
+    makeUrl(options: { sources?: string }, endpoint: Endpoints.EVERYTHING | Endpoints.SOURCES): URL {
+        const urlOptions: URLSearchParams = new URLSearchParams({ ...this.options, ...options });
+        let url: URL = new URL(`${this.baseLink}${endpoint}?`);
 
-        Object.keys(urlOptions).forEach((key) => {
-            url += `${key}=${urlOptions[key]}&`;
-        });
-
-        return url.slice(0, -1);
+        url.search = urlOptions.toString();
+        return url;
     }
 
-    load(method: string, endpoint: string, callback: CallableFunction, options = {}) {
-        fetch(this.makeUrl(options, endpoint), { method })
-            .then(this.errorHandler)
-            .then((res) => res.json())
-            .then((data) => callback(data))
-            .catch((err) => console.error(err));
+    async load<T>(
+        method: Methods,
+        endpoint: Endpoints.EVERYTHING | Endpoints.SOURCES,
+        options = {}
+    ): Promise<T | undefined> {
+        try {
+            const res: Response = await fetch(this.makeUrl(options, endpoint), { method });
+            return await this.errorHandler(res).json();
+        } catch (err) {
+            console.error(err);
+        }
     }
 }
 
